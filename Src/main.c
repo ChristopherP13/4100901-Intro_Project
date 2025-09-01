@@ -72,15 +72,25 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   if (huart->Instance == USART2)
   {
-    // Responder SIEMPRE con la cadena "@"
-    uint8_t reply = '@';
+    uint8_t reply;
+
+    // Si el usuario envía '@', responder con 'X'
+    if (rx_data == '@')
+    {
+      reply = 'X';
+    }
+    else
+    {
+      reply = '@';
+    }
+
+    // Enviar la respuesta por UART
     HAL_UART_Transmit(&huart2, &reply, 1, 10);
 
-
-    // Volvemos a habilitar la interrupción de recepción UART para el próximo byte
+    // Rearmar la recepción por interrupción para el próximo byte
     HAL_UART_Receive_IT(&huart2, &rx_data, 1);
   }
-}
+
 
 // Callback que se ejecuta cuando ocurre una interrupción externa (Botón B1)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
